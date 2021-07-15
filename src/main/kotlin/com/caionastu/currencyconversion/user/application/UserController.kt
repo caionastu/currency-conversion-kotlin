@@ -8,6 +8,9 @@ import com.caionastu.currencyconversion.user.application.response.UserResponse
 import com.caionastu.currencyconversion.user.domain.User
 import com.caionastu.currencyconversion.user.exception.UserNameAlreadyExistsException
 import com.caionastu.currencyconversion.user.repository.UserRepository
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,6 +28,10 @@ class UserController(private val repository: UserRepository) {
 
     @ApiPageable
     @GetMapping
+    @ApiOperation("Retrieve all users")
+    @ApiResponses(
+        ApiResponse(code = 200, message = "Successful Operation")
+    )
     fun findAll(@ApiIgnore pageable: Pageable): ResponseEntity<ApiCollectionResponse<UserResponse>> {
         log.info("Receiving request to find all users.")
         val pageableRequest = sortIfUnsorted(pageable, Sort.by(Sort.Direction.ASC, "name"))
@@ -37,6 +44,12 @@ class UserController(private val repository: UserRepository) {
     }
 
     @PostMapping
+    @ApiOperation("Create new user")
+    @ApiResponses(
+        ApiResponse(code = 200, message = "Successful Operation"),
+        ApiResponse(code = 400, message = "Invalid Request"),
+        ApiResponse(code = 500, message = "Name already in use")
+    )
     fun create(@Valid @RequestBody request: CreateUserRequest): ResponseEntity<UserResponse> {
         log.info("Receiving request to create new user with name: {}.", request.name);
 
